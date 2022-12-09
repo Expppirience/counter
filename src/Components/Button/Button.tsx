@@ -1,20 +1,27 @@
-import React, {FC} from 'react';
+import React, { FC } from "react";
 
 // * Types
 export interface ButtonPropsType {
-    children: React.ReactNode
-    onClickHandler: () => void
-    className?: string
-    isDisabled: boolean
+  children: React.ReactNode;
+  onClickHandler: () => void;
+  className?: string;
+  isDisabled: boolean;
 }
 
-
 // * Component
-export const Button: FC<ButtonPropsType> = ({children, onClickHandler, className, isDisabled}) => {
-    return (
-        <button disabled={isDisabled} onClick={onClickHandler} className={className ? className : ''}>
-            {children}
-        </button>
-    );
+export const Button: FC<ButtonPropsType> = ({
+  children,
+  onClickHandler,
+  className,
+  isDisabled,
+}) => {
+  return (
+    <button
+      disabled={isDisabled}
+      onClick={onClickHandler}
+      className={className ? className : ""}
+    >
+      {children}
+    </button>
+  );
 };
-

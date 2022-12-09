@@ -1,80 +1,104 @@
-import React, {FC, useEffect, useState} from 'react';
-import {Input} from "../Input/Input";
-import {Button} from "../Button/Button";
+import {} from "../../redux/store";
+
+import React, { FC } from "react";
+import { pageSelector, settingsSelector } from "./../../redux/selectors/index";
+import {
+  setCountingModeAC,
+  setErrorAC,
+  setInterfaceValuesAC,
+  setSettingsMaxValueAC,
+  setSettingsMinValueAC,
+} from "../../redux/actionCreators";
+
+import { Button } from "../Button/Button";
+import { Input } from "../Input/Input";
+import { PageStateType } from "../../redux/reducers/pageReducer";
+import { SettingsStateType } from "../../redux/reducers/settingsReducer";
+import { useDispatch } from "react-redux";
+import { useTypedSelector } from "./../../hooks/index";
 
 // * Types
-interface SettingsPropsType {
-    setError: (value: boolean) => void;
-    error: boolean;
-    updateValues: (maxValue: number, startValue: number) => void;
-    countingMode: boolean;
-    setCountingMode: (value: boolean) => void;
-}
-
+interface SettingsPropsType {}
 
 // * Component
-export const Settings: FC<SettingsPropsType> = (
-    {error, setError, updateValues, countingMode, setCountingMode}) => {
+export const Settings: FC<SettingsPropsType> = () => {
+  // * State
 
-    // * State
-    const [maxValue, setMaxValue] = useState<number>(1);
-    const [startValue, setStartValue] = useState<number>(0);
+  const dispatch = useDispatch();
+  const settingsState = useTypedSelector<SettingsStateType>(settingsSelector);
+  const pageState = useTypedSelector<PageStateType>(pageSelector);
 
+  const changeMaxValue = (value: string) => {
+    pageState.countingMode && dispatch(setCountingModeAC(false));
+    const error =
+      +value <= 0 ||
+      settingsState.minValue < 0 ||
+      +value <= settingsState.minValue;
+    dispatch(setErrorAC(error));
+    dispatch(setSettingsMaxValueAC(+value));
+  };
 
-    // * Utils
+  const changeStartValue = (value: string) => {
+    pageState.countingMode && dispatch(setCountingModeAC(false));
+    const error =
+      settingsState.maxValue <= 0 ||
+      +value < 0 ||
+      +value >= settingsState.maxValue;
+    dispatch(setErrorAC(error));
+    dispatch(setSettingsMinValueAC(+value));
+  };
 
-    useEffect(() => {
-        const storageMaxValue = localStorage.getItem('maxValue')
-        const storageStartValue = localStorage.getItem('startValue')
-        if(storageMaxValue && storageStartValue) {
-            setMaxValue(JSON.parse(storageMaxValue))
-            setStartValue(JSON.parse(storageStartValue))
-        }
-    }, []);
-
-
-    const changeMaxValue = (value: string) => {
-        countingMode && setCountingMode(false)
-        setError(+value <= 0 || startValue < 0 || +value <= startValue)
-        setMaxValue(+value)
-    }
-    const changeStartValue = (value: string) => {
-        countingMode && setCountingMode(false)
-        setError(maxValue <= 0 || +value < 0 || +value >= maxValue)
-        setStartValue(+value)
-    }
-
-    const onSetHandler = () => {
-        updateValues(maxValue, startValue)
-        setCountingMode(true)
-    }
-
-    // * Return
-    return (
-        <div className='counter__settings settings-counter counter-border'>
-            <div className="counter-fill settings-counter__nav">
-                <div className="settings-counter__field">
-                    <label className="settings-counter__label">Max value: </label>
-                    <Input error={maxValue <= startValue || maxValue <= 0} type={'number'}
-                           onChangeHandler={changeMaxValue}
-                           className={'settings-counter__inp'}
-                           value={maxValue}/>
-                </div>
-                <div className="settings-counter__field">
-                    <label className="settings-counter__label">Start value: </label>
-                    <Input error={startValue >= maxValue || startValue < 0} type={'number'}
-                           onChangeHandler={changeStartValue}
-                           className={'settings-counter__inp'}
-                           value={startValue}/>
-                </div>
-            </div>
-            <div className="counter__btns">
-                <Button onClickHandler={onSetHandler} className={'counter__btn'}
-                        isDisabled={error || countingMode}>
-                    set
-                </Button>
-            </div>
-        </div>
+  const onSetHandler = () => {
+    dispatch(
+      setInterfaceValuesAC(settingsState.minValue, settingsState.maxValue)
     );
-};
+    dispatch(setCountingModeAC(true));
+  };
 
+  const isMaxValueDisabled =
+    settingsState.maxValue <= settingsState.minValue ||
+    settingsState.maxValue <= 0;
+
+  const isMinValueDisabled =
+    settingsState.minValue >= settingsState.maxValue ||
+    settingsState.minValue < 0;
+
+  const isSettingButtonDisabled = pageState.error || pageState.countingMode;
+
+  // * Return
+  return (
+    <div className="counter__settings settings-counter counter-border">
+      <div className="counter-fill settings-counter__nav">
+        <div className="settings-counter__field">
+          <label className="settings-counter__label">Max value: </label>
+          <Input
+            error={isMaxValueDisabled}
+            type={"number"}
+            onChangeHandler={changeMaxValue}
+            className={"settings-counter__inp"}
+            value={settingsState.maxValue}
+          />
+        </div>
+        <div className="settings-counter__field">
+          <label className="settings-counter__label">Start value: </label>
+          <Input
+            error={isMinValueDisabled}
+            type={"number"}
+            onChangeHandler={changeStartValue}
+            className={"settings-counter__inp"}
+            value={settingsState.minValue}
+          />
+        </div>
+      </div>
+      <div className="counter__btns">
+        <Button
+          onClickHandler={onSetHandler}
+          className={"counter__btn"}
+          isDisabled={isSettingButtonDisabled}
+        >
+          set
+        </Button>
+      </div>
+    </div>
+  );
+};
