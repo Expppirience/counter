@@ -6,6 +6,7 @@ import {
   SET_INTERFACE_VALUES,
   SET_SETTINGS_MAX_VALUE_TYPE,
   SET_SETTINGS_MIN_VALUE_TYPE,
+  SET_SETTINGS_VALUES_TYPE,
 } from "./actionTypes";
 
 // Interface
@@ -44,6 +45,7 @@ export const setInterfaceValuesAC = (minValue: number, maxValue: number) => {
 
 export type setSettingsMaxValueACT = ReturnType<typeof setSettingsMaxValueAC>;
 export type setSettingsMinValueACT = ReturnType<typeof setSettingsMinValueAC>;
+export type setSettingsValuesACT = ReturnType<typeof setSettingsLCValuesAC>;
 
 export const setSettingsMaxValueAC = (value: number) => {
   return {
@@ -59,6 +61,16 @@ export const setSettingsMinValueAC = (value: number) => {
     type: SET_SETTINGS_MIN_VALUE_TYPE,
     data: {
       value,
+    },
+  } as const;
+};
+
+export const setSettingsLCValuesAC = (minValue: number, maxValue: number) => {
+  return {
+    type: SET_SETTINGS_VALUES_TYPE,
+    data: {
+      minValue,
+      maxValue,
     },
   } as const;
 };

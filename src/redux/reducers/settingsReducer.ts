@@ -1,10 +1,12 @@
 import {
   SET_SETTINGS_MAX_VALUE_TYPE,
   SET_SETTINGS_MIN_VALUE_TYPE,
+  SET_SETTINGS_VALUES_TYPE,
 } from "../actionTypes";
 import {
   setSettingsMaxValueACT,
   setSettingsMinValueACT,
+  setSettingsValuesACT,
 } from "../actionCreators";
 
 export interface SettingsStateType {
@@ -12,10 +14,10 @@ export interface SettingsStateType {
   minValue: number;
 }
 
-export type SettingsActionType =
+export type SettingsAT =
   | setSettingsMaxValueACT
-  | setSettingsMinValueACT;
-
+  | setSettingsMinValueACT
+  | setSettingsValuesACT;
 const initialState = {
   maxValue: 1,
   minValue: 0,
@@ -23,7 +25,7 @@ const initialState = {
 
 export const settingsReducer = (
   state: SettingsStateType = initialState,
-  action: SettingsActionType
+  action: SettingsAT
 ) => {
   switch (action.type) {
     case SET_SETTINGS_MAX_VALUE_TYPE:
@@ -31,6 +33,14 @@ export const settingsReducer = (
 
     case SET_SETTINGS_MIN_VALUE_TYPE:
       return { ...state, minValue: action.data.value };
+
+    case SET_SETTINGS_VALUES_TYPE:
+      return {
+        ...state,
+        minValue: action.data.minValue,
+        maxValue: action.data.maxValue,
+      };
+
     default:
       return state;
   }

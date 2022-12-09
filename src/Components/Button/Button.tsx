@@ -9,19 +9,16 @@ export interface ButtonPropsType {
 }
 
 // * Component
-export const Button: FC<ButtonPropsType> = ({
-  children,
-  onClickHandler,
-  className,
-  isDisabled,
-}) => {
-  return (
-    <button
-      disabled={isDisabled}
-      onClick={onClickHandler}
-      className={className ? className : ""}
-    >
-      {children}
-    </button>
-  );
-};
+export const Button: FC<ButtonPropsType> = React.memo(
+  ({ children, onClickHandler, className, isDisabled }) => {
+    return (
+      <button
+        disabled={isDisabled}
+        onClick={onClickHandler}
+        className={className ? className : ""}
+      >
+        {children}
+      </button>
+    );
+  }
+);

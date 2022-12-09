@@ -10,25 +10,21 @@ interface InputPropsType {
 }
 
 // * Component
-export const Input: FC<InputPropsType> = ({
-  type,
-  onChangeHandler,
-  className,
-  value,
-  error,
-}) => {
-  // * Utils
-  const inputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChangeHandler(e.currentTarget.value);
-  };
+export const Input: FC<InputPropsType> = React.memo(
+  ({ type, onChangeHandler, className, value, error }) => {
+    // * Utils
+    const inputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChangeHandler(e.currentTarget.value);
+    };
 
-  // * Return
-  return (
-    <input
-      type={type}
-      value={value}
-      onChange={inputChange}
-      className={`${className} ${error ? "counter-error" : ""}`}
-    />
-  );
-};
+    // * Return
+    return (
+      <input
+        type={type}
+        value={value}
+        onChange={inputChange}
+        className={`${className} ${error ? "counter-error" : ""}`}
+      />
+    );
+  }
+);

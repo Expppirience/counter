@@ -1,47 +1,62 @@
-import React, { FC } from "react";
+import React, { FC, useCallback, useMemo } from "react";
 import {
   incrementInterfaceValueAC,
   resetInterfaceValueAC,
 } from "../../redux/actionCreators";
+import { useAppDispatch, useTypedSelector } from "./../../hooks/index";
 
 import { Button } from "../Button/Button";
 import { InterfaceStateType } from "../../redux/reducers/interfaceReducer";
 import { PageStateType } from "../../redux/reducers/pageReducer";
 import { interfaceSelector } from "../../redux/selectors";
 import { pageSelector } from "./../../redux/selectors/index";
-import { useDispatch } from "react-redux";
-import { useTypedSelector } from "./../../hooks/index";
 
 // * Types
 interface InterfacePropsType {}
 
 // * Component
-export const Interface: FC<InterfacePropsType> = () => {
+export const Interface: FC<InterfacePropsType> = React.memo(() => {
   // * Return
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const interfaceState =
     useTypedSelector<InterfaceStateType>(interfaceSelector);
   const pageState = useTypedSelector<PageStateType>(pageSelector);
 
-  const incDisabled =
-    interfaceState.currentValue === interfaceState.maxValue ||
-    pageState.error ||
-    !pageState.countingMode;
-  const resetDisabled =
-    interfaceState.currentValue <= interfaceState.minValue ||
-    pageState.error ||
-    !pageState.countingMode;
-  const isCurrentValueEvenMax =
-    interfaceState.currentValue === interfaceState.maxValue;
+  const memoDeps = [
+    interfaceState.currentValue,
+    interfaceState.maxValue,
+    pageState.error,
+    pageState.countingMode,
+  ];
 
-  const resetCounter = () => {
+  const incDisabled = useMemo(() => {
+    return (
+      interfaceState.currentValue === interfaceState.maxValue ||
+      pageState.error ||
+      !pageState.countingMode
+    );
+  }, memoDeps);
+
+  const resetDisabled = useMemo(() => {
+    return (
+      interfaceState.currentValue <= interfaceState.minValue ||
+      pageState.error ||
+      !pageState.countingMode
+    );
+  }, memoDeps);
+
+  const isCurrentValueEvenMax = useMemo(() => {
+    return interfaceState.currentValue === interfaceState.maxValue;
+  }, memoDeps);
+
+  const resetCounter = useCallback(() => {
     dispatch(resetInterfaceValueAC());
-  };
+  }, [dispatch]);
 
-  const incrementValue = () => {
+  const incrementValue = useCallback(() => {
     dispatch(incrementInterfaceValueAC());
-  };
+  }, [dispatch]);
   return (
     <div className="counter__interface counter-border">
       <span
@@ -73,4 +88,4 @@ export const Interface: FC<InterfacePropsType> = () => {
       </div>
     </div>
   );
-};
+});

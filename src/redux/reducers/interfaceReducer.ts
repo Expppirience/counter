@@ -15,7 +15,7 @@ export interface InterfaceStateType {
   currentValue: number;
 }
 
-export type InterfaceActionTypes =
+export type InterfaceAT =
   | incrementInterfaceValueACT
   | resetInterfaceValueACT
   | setInterfaceValuesACT;
@@ -28,7 +28,7 @@ const initialState = {
 
 export const interfaceReducer = (
   state: InterfaceStateType = initialState,
-  action: InterfaceActionTypes
+  action: InterfaceAT
 ) => {
   switch (action.type) {
     case INCREMENT_INTERFACE_VALUE_TYPE:

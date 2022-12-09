@@ -1,6 +1,6 @@
 import {} from "../../redux/store";
 
-import React, { FC } from "react";
+import React, { FC, useCallback, useEffect } from "react";
 import { pageSelector, settingsSelector } from "./../../redux/selectors/index";
 import {
   setCountingModeAC,
@@ -9,13 +9,12 @@ import {
   setSettingsMaxValueAC,
   setSettingsMinValueAC,
 } from "../../redux/actionCreators";
+import { useAppDispatch, useTypedSelector } from "./../../hooks/index";
 
 import { Button } from "../Button/Button";
 import { Input } from "../Input/Input";
 import { PageStateType } from "../../redux/reducers/pageReducer";
 import { SettingsStateType } from "../../redux/reducers/settingsReducer";
-import { useDispatch } from "react-redux";
-import { useTypedSelector } from "./../../hooks/index";
 
 // * Types
 interface SettingsPropsType {}
@@ -24,7 +23,7 @@ interface SettingsPropsType {}
 export const Settings: FC<SettingsPropsType> = () => {
   // * State
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const settingsState = useTypedSelector<SettingsStateType>(settingsSelector);
   const pageState = useTypedSelector<PageStateType>(pageSelector);
 
@@ -48,12 +47,12 @@ export const Settings: FC<SettingsPropsType> = () => {
     dispatch(setSettingsMinValueAC(+value));
   };
 
-  const onSetHandler = () => {
+  const onSetHandler = useCallback(() => {
     dispatch(
       setInterfaceValuesAC(settingsState.minValue, settingsState.maxValue)
     );
     dispatch(setCountingModeAC(true));
-  };
+  }, [settingsState.minValue, settingsState.maxValue, dispatch]);
 
   const isMaxValueDisabled =
     settingsState.maxValue <= settingsState.minValue ||
